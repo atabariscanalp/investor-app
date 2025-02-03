@@ -8,18 +8,18 @@ const checkIfRequestIsNewTOS = (signupDate: string, requestTimeZone: RequestTime
 	return signupDateUTC.getTime() > TOS_CUTOFF_DATE.getTime()
 }
 
-const getApprovalTimeLimit = (requestType: RequestType, requestTimeZone: RequestTimeZone, isNewApproval: boolean, investmentDateStr: string) => {
+const getApprovalTimeLimit = (requestType: RequestType, requestTimeZone: RequestTimeZone, isNewTOS: boolean, investmentDateStr: string) => {
 	const investmentDateUTC = convertDateToUTC(investmentDateStr, requestTimeZone)
 	let timeToAdd = 0
 
 	switch (requestType) {
 		case RequestType.PHONE:
 			// add 24 hours for new tos, 4 hours for old tos
-			timeToAdd = isNewApproval ? 1000 * 60 * 60 * 24 : 1000 * 60 * 60 * 4
+			timeToAdd = isNewTOS ? 1000 * 60 * 60 * 24 : 1000 * 60 * 60 * 4
 			break
 		case RequestType.WEB_APP:
 			// add 16 hours for new tos, 8 hours for old tos
-			timeToAdd = isNewApproval ? 1000 * 60 * 60 * 16 : 1000 * 60 * 60 * 8
+			timeToAdd = isNewTOS ? 1000 * 60 * 60 * 16 : 1000 * 60 * 60 * 8
 			break
 		default:
 			throw new Error("Invalid request type")
@@ -69,7 +69,7 @@ const getBusinessHours = (requestTimeZone: RequestTimeZone) => {
 
 const getRequestRegistrationDate = (requestType: RequestType, requestTimeZone: RequestTimeZone, refundRequestDateStr: string) => {
 	const refundRequestDateUTC = convertDateToUTC(refundRequestDateStr, requestTimeZone)
-	
+
 	// if request is made from WEB just return it
 	if (requestType === RequestType.WEB_APP) {
 		return refundRequestDateUTC
